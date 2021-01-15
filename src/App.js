@@ -68,13 +68,15 @@ function App() {
 
 
   useEffect(() => {
-    db
-      .collection('posts')
-      .orderBy('timestamp', 'desc')
-      .onSnapshot(snapshot => {
-        setPosts(snapshot.docs.map(doc => doc.data()))
-      })
-  }, [])
+    // This is where the code runs
+    db.collection('posts').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      // every time a new post is added, this code fires up
+      setPosts(snapshot.docs.map(doc => ({
+        id: doc.id,
+        post: doc.data()
+      })));
+    })
+  }, []);
 
   const signUp = e => {
     e.preventDefault();
@@ -196,10 +198,12 @@ function App() {
       <div className="app__posts">
         <div className="app__postsLeft">
           {
-            posts.map((post, id) => (
-              <Post key={id} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
+            posts.map(({ post, id }) =>
+            (
+              <Post key={id} postId={id} user={user} username={post.username} caption={post.caption} imageUrl={post.imageUrl} />
             ))
           }
+
         </div>
         <div className="app__postsRight">
           <InstagramEmbed
